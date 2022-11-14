@@ -6,4 +6,10 @@ exports.fetchTopics = () => {
   });
 };
 
-exports.fetchArticleById = () => {};
+exports.fetchArticleById = (id) => {
+  return db
+    .query(`SELECT * FROM articles WHERE article_id = $1`, [id])
+    .then((res) => {
+      return res.rows;
+    });
+};

@@ -9,5 +9,10 @@ exports.getTopics = (req, res, next) => {
 };
 
 exports.getArticleById = (req, res, next) => {
-  fetchArticleById;
+  const article_id = req.params.article_id;
+  fetchArticleById(article_id)
+    .then((article) => {
+      res.send({ article });
+    })
+    .catch(next);
 };

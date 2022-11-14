@@ -1,5 +1,8 @@
 const express = require("express");
-const { handleServerErrors } = require("./controllers/errors.controller");
+const {
+  handleServerErrors,
+  handlePSQLErrors,
+} = require("./controllers/errors.controller");
 const { getTopics, getArticleById } = require("./controllers/news.controller");
 const app = express();
 
@@ -13,6 +16,8 @@ app.get("/api/articles/:article_id", getArticleById);
 app.all("/*", (req, res) => {
   res.status(404).send({ msg: "Invalid URL" });
 });
+
+app.use(handlePSQLErrors);
 
 app.use(handleServerErrors);
 

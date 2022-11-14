@@ -1,11 +1,13 @@
 const express = require("express");
 const { handleServerErrors } = require("./controllers/errors.controller");
-const { getTopics } = require("./controllers/news.controller");
+const { getTopics, getArticles } = require("./controllers/news.controller");
 const app = express();
 
 // Endpoints
 
 app.get("/api/topics", getTopics);
+
+app.get("/api/articles", getArticles);
 
 // Error Handling
 

@@ -32,7 +32,7 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        expect(Array.isArray(body.articles)).toBe(true);
+        expect(body.articles.length).toBe(12);
         expect(body.articles).toBeSortedBy("created_at", { descending: true });
         body.articles.forEach((article) => {
           expect(article).toMatchObject({

@@ -35,4 +35,12 @@ describe("Error Handling", () => {
         expect(body.msg).toBe("Invalid URL");
       });
   });
+  it("GET - 400: Should return 400 with error msg of 'Bad Request - Invalid datatype for ID'", () => {
+    return request(app)
+      .get("/api/articles/invalidDT")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request - datatype for ID");
+      });
+  });
 });

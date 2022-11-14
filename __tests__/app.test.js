@@ -49,6 +49,25 @@ describe("/api/articles", () => {
   });
 });
 
+describe("/api/articles/:article_id", () => {
+  it("GET - 200: Should return an article object with the correct properties.", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          author: "butter_bridge",
+          title: "Living in the shadow of a great man",
+          article_id: 1,
+          body: "I find this existence challenging",
+          topic: "mitch",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 100,
+        });
+      });
+  });
+});
+
 describe("Error Handling", () => {
   it("GET - 404: Should return msg: Invalid URL when given an unknown endpoint", () => {
     return request(app)
@@ -56,6 +75,22 @@ describe("Error Handling", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid URL");
+      });
+  });
+  it("GET - 400: Should return 400 with error msg of 'Bad Request - Invalid datatype for ID'", () => {
+    return request(app)
+      .get("/api/articles/invalidDT")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request - datatype for ID");
+      });
+  });
+  it("GET - 404: Should return 404 with error msg of 'Invalid ID: ID not found!'", () => {
+    return request(app)
+      .get("/api/articles/99999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid ID: ID not found!");
       });
   });
 });

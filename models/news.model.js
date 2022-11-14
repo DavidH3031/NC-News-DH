@@ -20,3 +20,23 @@ exports.fetchArticles = () => {
       return res.rows;
     });
 };
+
+exports.fetchArticleById = (id) => {
+  return db
+    .query(
+      `
+    SELECT author, title, article_id, body, topic, created_at, votes
+    FROM articles
+    WHERE article_id = $1;`,
+      [id]
+    )
+    .then((res) => {
+      if (res.rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Invalid ID: ID not found!",
+        });
+      }
+      return res.rows[0];
+    });
+};

@@ -16,9 +16,11 @@ describe("/api/topics", () => {
       .expect(200)
       .then(({ body }) => {
         expect(Array.isArray(body.topics)).toBe(true);
-        expect(body.topics[0]).toMatchObject({
-          slug: expect.any(String),
-          description: expect.any(String),
+        body.topics.forEach((topic) => {
+          expect(topic).toMatchObject({
+            slug: expect.any(String),
+            description: expect.any(String),
+          });
         });
       });
   });

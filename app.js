@@ -2,6 +2,7 @@ const express = require("express");
 const {
   handleServerErrors,
   handlePSQLErrors,
+  handleCustomErrors,
 } = require("./controllers/errors.controller");
 const {
   getTopics,
@@ -24,6 +25,8 @@ app.all("/*", (req, res) => {
 // Error Handling
 
 app.use(handlePSQLErrors);
+
+app.use(handleCustomErrors);
 
 app.use(handleServerErrors);
 

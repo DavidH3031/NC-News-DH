@@ -7,7 +7,10 @@ exports.handlePSQLErrors = (err, req, res, next) => {
   if (err.code === "22P02") {
     res.status(400).send({ msg: "Bad Request - datatype for ID" });
   } else if (err.code === "23502") {
-    res.status(400).send({ msg: "Invalid POST body!" });
+    let msg = "Invalid POST body!";
+    if (err.column === "body") msg = 'Key "body" is missing';
+    if (err.column === "author") msg = 'Key "username" is missing';
+    res.status(400).send({ msg });
   } else if (
     err.code === "23503" &&
     err.constraint === "comments_author_fkey"

@@ -68,6 +68,25 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
+describe("/api/articles/:article_id/comments", () => {
+  it("POST - 201: Should return the posted comment", () => {
+    const comment = { username: "lurker", body: "Fake news!!!" };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(comment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.postedComment).toMatchObject({
+          comment_id: expect.any(Number),
+          author: "lurker",
+          body: "Fake news!!!",
+          votes: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+});
+
 describe("Error Handling", () => {
   it("GET - 404: Should return msg: Invalid URL when given an unknown endpoint", () => {
     return request(app)

@@ -4,6 +4,7 @@ const {
   fetchArticleById,
   insertComment,
   fetchCommentsById,
+  fetchUsers,
 } = require("../models/news.model");
 
 exports.getTopics = (req, res, next) => {
@@ -46,6 +47,14 @@ exports.postComment = (req, res, next) => {
   insertComment(article_id, comment)
     .then((postedComment) => {
       res.status(201).send({ postedComment });
+    })
+    .catch(next);
+};
+
+exports.getUsers = (req, res, next) => {
+  fetchUsers()
+    .then((users) => {
+      res.send({ users });
     })
     .catch(next);
 };

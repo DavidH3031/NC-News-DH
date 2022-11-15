@@ -112,6 +112,24 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
+describe("/api/users", () => {
+  it("GET - 200: Should return an array of objects with the correct properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users.length).toBe(4);
+        body.users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+});
+
 describe("Error Handling", () => {
   it("GET - 404: Should return msg: Invalid URL when given an unknown endpoint", () => {
     return request(app)

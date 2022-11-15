@@ -76,10 +76,23 @@ const insertComment = (id, { username, body }) => {
     });
 };
 
+const fetchUsers = () => {
+  return db
+    .query(
+      `
+      SELECT * FROM users;
+    `
+    )
+    .then((users) => {
+      return users.rows;
+    });
+};
+
 module.exports = {
   fetchArticleById,
   fetchArticles,
   fetchCommentsById,
   fetchTopics,
   insertComment,
+  fetchUsers,
 };

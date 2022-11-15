@@ -173,4 +173,34 @@ describe("Error Handling", () => {
         expect(body.msg).toBe("Bad Request - datatype for ID");
       });
   });
+  it("PATCH - 400: Valid ID but not found.", () => {
+    const body = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/99999")
+      .send(body)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid ID: Article not found!");
+      });
+  });
+  it("PATCH - 400: Invalid ID datatype passed into URL", () => {
+    const body = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/HELLO")
+      .send(body)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request - datatype for ID");
+      });
+  });
+  // it("PATCH - 400: 'inc_votes' not found on body", () => {
+  //   const body = { in_voe: 1 };
+  //   return request(app)
+  //     .patch("/api/articles/1")
+  //     .send(body)
+  //     .expect(400)
+  //     .then(({ body }) => {
+  //       expect(body.msg).toBe("Bad Request - datatype for ID");
+  //     });
+  // });
 });

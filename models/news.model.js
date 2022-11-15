@@ -88,11 +88,30 @@ const fetchUsers = () => {
     });
 };
 
+const updateVotes = (id, vote_inc) => {
+  return fetchArticleById(id).then(() => {
+    return db
+      .query(
+        `
+        UPDATE articles 
+        SET votes = votes + $1
+        WHERE article_id = $2
+        RETURNING *;
+      `,
+        [vote_inc, id]
+      )
+      .then((res) => {
+        return res.rows[0];
+      });
+  });
+};
+
 module.exports = {
   fetchArticleById,
   fetchArticles,
   fetchCommentsById,
   fetchTopics,
+  updateVotes,
   insertComment,
   fetchUsers,
 };

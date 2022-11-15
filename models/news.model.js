@@ -1,12 +1,12 @@
 const db = require("../db/connection.js");
 
-exports.fetchTopics = () => {
+const fetchTopics = () => {
   return db.query(`SELECT * FROM topics`).then((res) => {
     return res.rows;
   });
 };
 
-exports.fetchArticles = () => {
+const fetchArticles = () => {
   return db
     .query(
       `
@@ -21,7 +21,7 @@ exports.fetchArticles = () => {
     });
 };
 
-exports.fetchArticleById = (id) => {
+const fetchArticleById = (id) => {
   return db
     .query(
       `
@@ -31,12 +31,37 @@ exports.fetchArticleById = (id) => {
       [id]
     )
     .then((res) => {
-      if (res.rows.length === 0) {
+      if (!res.rows.length) {
         return Promise.reject({
           status: 404,
-          msg: "Invalid ID: ID not found!",
+          msg: "Invalid ID: Article not found!",
         });
       }
       return res.rows[0];
     });
+};
+
+const fetchCommentsById = (id) => {
+  return fetchArticleById(id).then(() => {
+    return db
+      .query(
+        `
+      SELECT comment_id, votes, created_at, author, body 
+      FROM comments
+      WHERE article_id = $1
+      ORDER BY created_at DESC;
+      `,
+        [id]
+      )
+      .then((res) => {
+        return res.rows;
+      });
+  });
+};
+
+module.exports = {
+  fetchArticleById,
+  fetchArticles,
+  fetchCommentsById,
+  fetchTopics,
 };

@@ -2,6 +2,7 @@ const {
   fetchTopics,
   fetchArticles,
   fetchArticleById,
+  fetchCommentsById,
 } = require("../models/news.model");
 
 exports.getTopics = (req, res, next) => {
@@ -25,6 +26,15 @@ exports.getArticleById = (req, res, next) => {
   fetchArticleById(article_id)
     .then((article) => {
       res.send({ article });
+    })
+    .catch(next);
+};
+
+exports.getArticleComments = (req, res, next) => {
+  const article_id = req.params.article_id;
+  fetchCommentsById(article_id)
+    .then((comments) => {
+      res.send({ comments });
     })
     .catch(next);
 };

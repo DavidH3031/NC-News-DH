@@ -162,7 +162,7 @@ describe("Error Handling", () => {
       .get("/api/articles/invalidDT")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request - datatype for ID");
+        expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
       });
   });
   it("GET - 404: Should return 404 with error msg of 'Invalid ID: Article not found!'", () => {
@@ -181,15 +181,14 @@ describe("Error Handling", () => {
         expect(body.msg).toBe("Invalid ID: Article not found!");
       });
   });
-  it("GET - 400: Should return 404 with error msg of 'Bad Request - datatype for ID'", () => {
+  it("GET - 400: Should return 404 with error msg of 'Bad Request - Invalid datatype for ID'", () => {
     return request(app)
       .get("/api/articles/tellmenews/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request - datatype for ID");
+        expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
       });
   });
-<<<<<<< HEAD
   it("PATCH - 400: Valid ID but not found.", () => {
     const body = { inc_votes: 1 };
     return request(app)
@@ -207,20 +206,29 @@ describe("Error Handling", () => {
       .send(body)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request - datatype for ID");
+        expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
       });
   });
-  // it("PATCH - 400: 'inc_votes' not found on body", () => {
-  //   const body = { in_voe: 1 };
-  //   return request(app)
-  //     .patch("/api/articles/1")
-  //     .send(body)
-  //     .expect(400)
-  //     .then(({ body }) => {
-  //       expect(body.msg).toBe("Bad Request - datatype for ID");
-  //     });
-  // });
-=======
+  it("PATCH - 400: 'inc_votes' not found on body", () => {
+    const body = { in_voe: 1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(body)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Key "inc_votes" is missing');
+      });
+  });
+  it("PATCH - 400: 'inc_votes' was given wrong datatype", () => {
+    const body = { inc_votes: "Hello" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(body)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
+      });
+  });
   it("POST - 400: Body missing.", () => {
     const comment = { username: "lurker" };
     return request(app)
@@ -271,5 +279,4 @@ describe("Error Handling", () => {
         expect(body.msg).toBe("Username does not exist!");
       });
   });
->>>>>>> 4426bb97303a96bcaea258c275dc0302517a2073
 });

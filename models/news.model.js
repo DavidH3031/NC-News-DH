@@ -76,6 +76,18 @@ const insertComment = (id, { username, body }) => {
     });
 };
 
+const fetchUsers = () => {
+  return db
+    .query(
+      `
+      SELECT * FROM users;
+    `
+    )
+    .then((users) => {
+      return users.rows;
+    });
+};
+
 const updateVotes = (id, vote_inc) => {
   return fetchArticleById(id).then(() => {
     return db
@@ -101,4 +113,5 @@ module.exports = {
   fetchTopics,
   updateVotes,
   insertComment,
+  fetchUsers,
 };

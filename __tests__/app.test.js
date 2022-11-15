@@ -66,6 +66,33 @@ describe("/api/articles/:article_id", () => {
         });
       });
   });
+  describe("/api/articles/:article_id/comments", () => {
+    it("GET - 200: Should return an array of comments for given article which should have the correct properties", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments.length).toBe(11);
+          body.comments.forEach((comment) => {
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            });
+          });
+        });
+    });
+    it("GET - 200: Should return an empty array when given article has no comments.", () => {
+      return request(app)
+        .get("/api/articles/4/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments.length).toBe(0);
+        });
+    });
+  });
 });
 
 describe("Error Handling", () => {
@@ -85,12 +112,28 @@ describe("Error Handling", () => {
         expect(body.msg).toBe("Bad Request - datatype for ID");
       });
   });
-  it("GET - 404: Should return 404 with error msg of 'Invalid ID: ID not found!'", () => {
+  it("GET - 404: Should return 404 with error msg of 'Invalid ID: Article not found!'", () => {
     return request(app)
       .get("/api/articles/99999")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid ID: ID not found!");
+        expect(body.msg).toBe("Invalid ID: Article not found!");
+      });
+  });
+  it("GET - 404: Should return 404 with error msg of 'No comments found for article with the id: 99999'", () => {
+    return request(app)
+      .get("/api/articles/77777/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid ID: Article not found!");
+      });
+  });
+  it("GET - 400: Should return 404 with error msg of 'Bad Request - datatype for ID'", () => {
+    return request(app)
+      .get("/api/articles/tellmenews/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request - datatype for ID");
       });
   });
 });

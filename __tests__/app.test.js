@@ -66,6 +66,42 @@ describe("/api/articles/:article_id", () => {
         });
       });
   });
+  it("PATCH - 200: Should return an article object with updated values.", () => {
+    const plusBody = { inc_votes: 20 };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(plusBody)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          author: "icellusedkars",
+          title: "Eight pug gifs that remind me of mitch",
+          article_id: 3,
+          body: "some gifs",
+          topic: "mitch",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 20,
+        });
+      });
+  });
+  it("PATCH - 200: Should return an article object with updated values when given a negative number.", () => {
+    const negativeBody = { inc_votes: -30 };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(negativeBody)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          author: "icellusedkars",
+          title: "Eight pug gifs that remind me of mitch",
+          article_id: 3,
+          body: "some gifs",
+          topic: "mitch",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: -30,
+        });
+      });
+  });
   describe("/api/articles/:article_id/comments", () => {
     it("GET - 200: Should return an array of comments for given article which should have the correct properties", () => {
       return request(app)

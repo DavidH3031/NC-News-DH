@@ -58,6 +58,23 @@ const fetchCommentsById = (id) => {
       });
   });
 };
+const insertComment = (id, { username, body }) => {
+  const date = new Date();
+  return db
+    .query(
+      `
+        INSERT INTO comments
+        (body, author, article_id, votes, created_at)
+        VALUES
+        ($1, $2, $3, $4, $5)
+        RETURNING *;
+      `,
+      [body, username, id, 0, date.toISOString()]
+    )
+    .then((comment) => {
+      return comment.rows[0];
+    });
+};
 
 const updateVotes = (id, vote_inc) => {
   return fetchArticleById(id).then(() => {
@@ -83,4 +100,5 @@ module.exports = {
   fetchCommentsById,
   fetchTopics,
   updateVotes,
+  insertComment,
 };

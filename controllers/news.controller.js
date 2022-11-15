@@ -2,6 +2,7 @@ const {
   fetchTopics,
   fetchArticles,
   fetchArticleById,
+  insertComment,
   fetchCommentsById,
   updateVotes,
 } = require("../models/news.model");
@@ -46,6 +47,16 @@ exports.patchArticleVotes = (req, res, next) => {
   updateVotes(article_id, inc)
     .then((article) => {
       res.send({ article });
+    })
+    .catch(next);
+};
+
+exports.postComment = (req, res, next) => {
+  const article_id = req.params.article_id;
+  const comment = req.body;
+  insertComment(article_id, comment)
+    .then((postedComment) => {
+      res.status(201).send({ postedComment });
     })
     .catch(next);
 };

@@ -129,6 +129,22 @@ describe("/api/articles/:article_id", () => {
           expect(body.comments.length).toBe(0);
         });
     });
+    it("POST - 201: Should return the posted comment", () => {
+      const comment = { username: "lurker", body: "Fake news!!!" };
+      return request(app)
+        .post("/api/articles/4/comments")
+        .send(comment)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.postedComment).toMatchObject({
+            comment_id: expect.any(Number),
+            author: "lurker",
+            body: "Fake news!!!",
+            votes: 0,
+            created_at: expect.any(String),
+          });
+        });
+    });
   });
 });
 
@@ -173,6 +189,7 @@ describe("Error Handling", () => {
         expect(body.msg).toBe("Bad Request - datatype for ID");
       });
   });
+<<<<<<< HEAD
   it("PATCH - 400: Valid ID but not found.", () => {
     const body = { inc_votes: 1 };
     return request(app)
@@ -203,4 +220,56 @@ describe("Error Handling", () => {
   //       expect(body.msg).toBe("Bad Request - datatype for ID");
   //     });
   // });
+=======
+  it("POST - 400: Body missing.", () => {
+    const comment = { username: "lurker" };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Key "body" is missing');
+      });
+  });
+  it("POST - 400: Username missing.", () => {
+    const comment = { body: "Lurker" };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Key "username" is missing');
+      });
+  });
+  it("POST - 400: Body key spelt incorrectly", () => {
+    const comment = { username: "lurker", boy: "This article is amazing" };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Key "body" is missing');
+      });
+  });
+  it("POST - 400: Username key spelt incorrectly", () => {
+    const comment = { usename: "lurker", body: "Broken username" };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Key "username" is missing');
+      });
+  });
+  it("POST - 400: Body fails schema validation. Username does not exist.", () => {
+    const comment = { username: "Kev", body: "475582" };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Username does not exist!");
+      });
+  });
+>>>>>>> 4426bb97303a96bcaea258c275dc0302517a2073
 });

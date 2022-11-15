@@ -9,6 +9,7 @@ const {
   getArticles,
   getArticleById,
   getArticleComments,
+  patchArticleVotes,
   postComment,
 } = require("./controllers/news.controller");
 const app = express();
@@ -22,6 +23,7 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getArticleComments);
 app.post("/api/articles/:article_id/comments", postComment);
+app.patch("/api/articles/:article_id", patchArticleVotes);
 
 app.all("/*", (req, res) => {
   res.status(404).send({ msg: "Invalid URL" });

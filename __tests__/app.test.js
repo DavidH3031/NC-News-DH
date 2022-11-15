@@ -66,6 +66,42 @@ describe("/api/articles/:article_id", () => {
         });
       });
   });
+  it("PATCH - 200: Should return an article object with updated values.", () => {
+    const plusBody = { inc_votes: 20 };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(plusBody)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          author: "icellusedkars",
+          title: "Eight pug gifs that remind me of mitch",
+          article_id: 3,
+          body: "some gifs",
+          topic: "mitch",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 20,
+        });
+      });
+  });
+  it("PATCH - 200: Should return an article object with updated values when given a negative number.", () => {
+    const negativeBody = { inc_votes: -30 };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(negativeBody)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          author: "icellusedkars",
+          title: "Eight pug gifs that remind me of mitch",
+          article_id: 3,
+          body: "some gifs",
+          topic: "mitch",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: -30,
+        });
+      });
+  });
   describe("/api/articles/:article_id/comments", () => {
     it("GET - 200: Should return an array of comments for given article which should have the correct properties", () => {
       return request(app)
@@ -126,7 +162,7 @@ describe("Error Handling", () => {
       .get("/api/articles/invalidDT")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request - datatype for ID");
+        expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
       });
   });
   it("GET - 404: Should return 404 with error msg of 'Invalid ID: Article not found!'", () => {
@@ -145,12 +181,52 @@ describe("Error Handling", () => {
         expect(body.msg).toBe("Invalid ID: Article not found!");
       });
   });
-  it("GET - 400: Should return 404 with error msg of 'Bad Request - datatype for ID'", () => {
+  it("GET - 400: Should return 404 with error msg of 'Bad Request - Invalid datatype for ID'", () => {
     return request(app)
       .get("/api/articles/tellmenews/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request - datatype for ID");
+        expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
+      });
+  });
+  it("PATCH - 400: Valid ID but not found.", () => {
+    const body = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/99999")
+      .send(body)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid ID: Article not found!");
+      });
+  });
+  it("PATCH - 400: Invalid ID datatype passed into URL", () => {
+    const body = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/HELLO")
+      .send(body)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
+      });
+  });
+  it("PATCH - 400: 'inc_votes' not found on body", () => {
+    const body = { in_voe: 1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(body)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Key "inc_votes" is missing');
+      });
+  });
+  it("PATCH - 400: 'inc_votes' was given wrong datatype", () => {
+    const body = { inc_votes: "Hello" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(body)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
       });
   });
   it("POST - 400: Body missing.", () => {

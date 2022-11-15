@@ -153,4 +153,24 @@ describe("Error Handling", () => {
         expect(body.msg).toBe("Bad Request - datatype for ID");
       });
   });
+  it("POST - 400: Body missing required fields.", () => {
+    const comment = { username: "lurker" };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid POST body!");
+      });
+  });
+  it("POST - 400: Body fails schema validation. Username does not exist.", () => {
+    const comment = { username: "Kev", body: "475582" };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Username does not exist!");
+      });
+  });
 });

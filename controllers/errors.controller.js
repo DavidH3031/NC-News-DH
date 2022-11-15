@@ -6,6 +6,13 @@ exports.handleServerErrors = (err, req, res, next) => {
 exports.handlePSQLErrors = (err, req, res, next) => {
   if (err.code === "22P02") {
     res.status(400).send({ msg: "Bad Request - datatype for ID" });
+  } else if (err.code === "23502") {
+    res.status(400).send({ msg: "Invalid POST body!" });
+  } else if (
+    err.code === "23503" &&
+    err.constraint === "comments_author_fkey"
+  ) {
+    res.status(400).send({ msg: "Username does not exist!" });
   } else {
     next(err);
   }

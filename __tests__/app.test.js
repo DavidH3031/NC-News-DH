@@ -47,6 +47,61 @@ describe("/api/articles", () => {
         });
       });
   });
+  it("GET - 200: Should return only those with given topic.", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(1);
+        expect(body.articles[0]).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          topic: "cats",
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          comment_count: expect.any(String),
+        });
+      });
+  });
+  it("GET - 200: Should return an array sorted by given argument.", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("article_id", { descending: true });
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  it("GET - 200: Should return an array in ascending order.", () => {
+    return request(app)
+      .get("/api/articles?order=oldest")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at");
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
@@ -199,7 +254,7 @@ describe("Error Handling", () => {
         expect(body.msg).toBe("Invalid ID: Article not found!");
       });
   });
-  it("GET - 400: Should return 404 with error msg of 'Bad Request - Invalid datatype for ID'", () => {
+  it("GET - 400: Should return 400 with error msg of 'Bad Request - Invalid datatype for ID'", () => {
     return request(app)
       .get("/api/articles/tellmenews/comments")
       .expect(400)
@@ -207,7 +262,7 @@ describe("Error Handling", () => {
         expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
       });
   });
-  it("PATCH - 400: Valid ID but not found.", () => {
+  it("PATCH - 404: Valid ID but not found.", () => {
     const body = { inc_votes: 1 };
     return request(app)
       .patch("/api/articles/99999")

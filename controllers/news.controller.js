@@ -17,7 +17,10 @@ exports.getTopics = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  fetchArticles()
+  const topic = req.query.topic;
+  const sort_by = req.query.sort_by;
+  const order = req.query.order;
+  fetchArticles(topic, sort_by, order)
     .then((articles) => {
       res.send({ articles });
     })

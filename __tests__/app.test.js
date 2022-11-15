@@ -89,6 +89,7 @@ describe("/api/articles/:article_id", () => {
         .get("/api/articles/4/comments")
         .expect(200)
         .then(({ body }) => {
+          expect(Array.isArray(body.comments)).toBe(true);
           expect(body.comments.length).toBe(0);
         });
     });

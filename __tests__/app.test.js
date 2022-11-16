@@ -47,6 +47,89 @@ describe("/api/articles", () => {
         });
       });
   });
+  it("GET - 200: Should return only those with given topic.", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(1);
+        expect(body.articles[0]).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          topic: "cats",
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          comment_count: expect.any(String),
+        });
+      });
+  });
+  it("GET - 200: Should return an empty array.", () => {
+    return request(app)
+      .get("/api/articles?topic=games")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(0);
+        expect(Array.isArray(body.articles));
+      });
+  });
+  it("GET - 200: Should return an array sorted by given argument.", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("article_id", { descending: true });
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  it("GET - 200: Should return an array in ascending order.", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at");
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  it("GET - 200: Should return an array in ascending order sorted by article ID with the topic of cats.", () => {
+    return request(app)
+      .get("/api/articles?order=asc&sort_by=article_id&topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("article_id");
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: "cats",
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
@@ -176,6 +259,42 @@ describe("Error Handling", () => {
         expect(body.msg).toBe("Invalid URL");
       });
   });
+  describe("Query Error Handling", () => {
+    it("GET- 404: Should respond with invalid query when passed an invalid column name in sort_by", () => {
+      return request(app)
+        .get("/api/articles?sort_by=whatcolumn")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("sort_by: 'whatcolumn' is not found.");
+        });
+    });
+    it("GET- 400: Should respond with 400 when given an incorrect topic", () => {
+      return request(app)
+        .get("/api/articles?topic=123456")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("topic '123456' is not allowed");
+        });
+    });
+    it("GET- 400: Should respond with 400 when given an invalid order by value", () => {
+      return request(app)
+        .get("/api/articles?order=down")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe(
+            "order 'down' does not exist. Please use: 'asc' or 'desc'"
+          );
+        });
+    });
+    it("GET- 404: Should respond with 400 when all but one query is valid", () => {
+      return request(app)
+        .get("/api/articles?order=asc&sort_by=whatcolumn&topic=mitch")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("sort_by: 'whatcolumn' is not found.");
+        });
+    });
+  });
   it("GET - 400: Should return 400 with error msg of 'Bad Request - Invalid datatype for ID'", () => {
     return request(app)
       .get("/api/articles/invalidDT")
@@ -200,7 +319,7 @@ describe("Error Handling", () => {
         expect(body.msg).toBe("Invalid ID: Article not found!");
       });
   });
-  it("GET - 400: Should return 404 with error msg of 'Bad Request - Invalid datatype for ID'", () => {
+  it("GET - 400: Should return 400 with error msg of 'Bad Request - Invalid datatype for ID'", () => {
     return request(app)
       .get("/api/articles/tellmenews/comments")
       .expect(400)
@@ -208,7 +327,7 @@ describe("Error Handling", () => {
         expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
       });
   });
-  it("PATCH - 400: Valid ID but not found.", () => {
+  it("PATCH - 404: Valid ID but not found.", () => {
     const body = { inc_votes: 1 };
     return request(app)
       .patch("/api/articles/99999")

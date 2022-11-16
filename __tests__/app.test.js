@@ -250,6 +250,17 @@ describe("/api/users", () => {
   });
 });
 
+describe("/api/comments/:comment_id", () => {
+  it("DELETE - 204: Should celete the comment with given ID and respond with 204 and no content", () => {
+    return request(app)
+      .delete("/api/comments/3")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+});
+
 describe("Error Handling", () => {
   it("GET - 404: Should return msg: Invalid URL when given an unknown endpoint", () => {
     return request(app)
@@ -260,7 +271,7 @@ describe("Error Handling", () => {
       });
   });
   describe("Query Error Handling", () => {
-    it("GET- 404: Should respond with invalid query when passed an invalid column name in sort_by", () => {
+    it("GET - 404: Should respond with invalid query when passed an invalid column name in sort_by", () => {
       return request(app)
         .get("/api/articles?sort_by=whatcolumn")
         .expect(404)
@@ -268,7 +279,7 @@ describe("Error Handling", () => {
           expect(body.msg).toBe("sort_by: 'whatcolumn' is not found.");
         });
     });
-    it("GET- 400: Should respond with 400 when given an incorrect topic", () => {
+    it("GET - 400: Should respond with 400 when given an incorrect topic", () => {
       return request(app)
         .get("/api/articles?topic=123456")
         .expect(400)
@@ -276,7 +287,7 @@ describe("Error Handling", () => {
           expect(body.msg).toBe("topic '123456' is not allowed");
         });
     });
-    it("GET- 400: Should respond with 400 when given an invalid order by value", () => {
+    it("GET - 400: Should respond with 400 when given an invalid order by value", () => {
       return request(app)
         .get("/api/articles?order=down")
         .expect(400)
@@ -286,12 +297,30 @@ describe("Error Handling", () => {
           );
         });
     });
-    it("GET- 404: Should respond with 400 when all but one query is valid", () => {
+    it("GET - 404: Should respond with 400 when all but one query is valid", () => {
       return request(app)
         .get("/api/articles?order=asc&sort_by=whatcolumn&topic=mitch")
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("sort_by: 'whatcolumn' is not found.");
+        });
+    });
+  });
+  describe("Delete Error Handling", () => {
+    it("DELETE - 400: Should return 400 when given an invalid datatype for ID", () => {
+      return request(app)
+        .delete("/api/comments/HELLO")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
+        });
+    });
+    it("DELETE - 404: Should return 404 when given a valid ID but not found", () => {
+      return request(app)
+        .delete("/api/comments/30312899")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("comment with that ID does not exist");
         });
     });
   });

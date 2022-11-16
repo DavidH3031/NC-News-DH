@@ -64,6 +64,15 @@ describe("/api/articles", () => {
         });
       });
   });
+  it("GET - 200: Should return an empty array.", () => {
+    return request(app)
+      .get("/api/articles?topic=games")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(0);
+        expect(Array.isArray(body.articles));
+      });
+  });
   it("GET - 200: Should return an array sorted by given argument.", () => {
     return request(app)
       .get("/api/articles?sort_by=article_id")
@@ -85,7 +94,7 @@ describe("/api/articles", () => {
   });
   it("GET - 200: Should return an array in ascending order.", () => {
     return request(app)
-      .get("/api/articles?order=oldest")
+      .get("/api/articles?order=asc")
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toBeSortedBy("created_at");
@@ -104,7 +113,7 @@ describe("/api/articles", () => {
   });
   it("GET - 200: Should return an array in ascending order sorted by article ID with the topic of cats.", () => {
     return request(app)
-      .get("/api/articles?order=oldest&sort_by=article_id&topic=cats")
+      .get("/api/articles?order=asc&sort_by=article_id&topic=cats")
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toBeSortedBy("article_id");
@@ -250,20 +259,20 @@ describe("Error Handling", () => {
       });
   });
   describe("Query Error Handling", () => {
-    it("GET- 400: Should respond with invalid query when passed an invalid column name in sort_by", () => {
+    it("GET- 404: Should respond with invalid query when passed an invalid column name in sort_by", () => {
       return request(app)
         .get("/api/articles?sort_by=whatcolumn")
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("sort_by 'whatcolumn' is not allowed.");
+          expect(body.msg).toBe("sort_by: 'whatcolumn' is not found.");
         });
     });
     it("GET- 400: Should respond with 400 when given an incorrect topic", () => {
       return request(app)
-        .get("/api/articles?topic=coding")
+        .get("/api/articles?topic=123456")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("topic 'coding' does not exist.");
+          expect(body.msg).toBe("topic '123456' is not allowed");
         });
     });
     it("GET- 400: Should respond with 400 when given an invalid order by value", () => {
@@ -272,16 +281,16 @@ describe("Error Handling", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe(
-            "order 'down' does not exist. Please use: 'latest' or 'oldest'"
+            "order 'down' does not exist. Please use: 'asc' or 'desc'"
           );
         });
     });
-    it("GET- 400: Should respond with 400 when all but one query is valid", () => {
+    it("GET- 404: Should respond with 400 when all but one query is valid", () => {
       return request(app)
-        .get("/api/articles?order=oldest&sort_by=whatcolumn&topic=mitch")
-        .expect(400)
+        .get("/api/articles?order=asc&sort_by=whatcolumn&topic=mitch")
+        .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("sort_by 'whatcolumn' is not allowed.");
+          expect(body.msg).toBe("sort_by: 'whatcolumn' is not found.");
         });
     });
   });

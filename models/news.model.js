@@ -6,7 +6,7 @@ const fetchTopics = () => {
   });
 };
 
-const fetchArticles = (topic, sort_by = "created_at", order = "latest") => {
+const fetchArticles = (topic, sort_by = "created_at", order = "desc") => {
   const allowedTopics = ["mitch", "cats"];
   const allowedSort = [
     "author",
@@ -17,20 +17,20 @@ const fetchArticles = (topic, sort_by = "created_at", order = "latest") => {
     "votes",
     "comment_count",
   ];
-  const orderLookup = { oldest: "asc", latest: "desc" };
+  const orderLookup = { asc: "asc", desc: "desc" };
   const queryArgs = [];
 
   if (!allowedSort.includes(sort_by)) {
     return Promise.reject({
-      status: 400,
-      msg: `sort_by '${sort_by}' is not allowed.`,
+      status: 404,
+      msg: `sort_by: '${sort_by}' is not found.`,
     });
   }
 
   if (!Object.keys(orderLookup).includes(order)) {
     return Promise.reject({
       status: 400,
-      msg: `order '${order}' does not exist. Please use: 'latest' or 'oldest'`,
+      msg: `order '${order}' does not exist. Please use: 'asc' or 'desc'`,
     });
   }
 
@@ -42,14 +42,16 @@ const fetchArticles = (topic, sort_by = "created_at", order = "latest") => {
   `;
 
   if (topic) {
-    if (!allowedTopics.includes(topic)) {
+    const topicRegex = /^[a-zA-Z]+$/g;
+    if (topicRegex.test(topic)) {
+      queryArgs.push(topic);
+      queryStr += `WHERE topic = $1`;
+    } else {
       return Promise.reject({
         status: 400,
-        msg: `topic '${topic}' does not exist.`,
+        msg: `topic '${topic}' is not allowed`,
       });
     }
-    queryStr += `WHERE topic = $1 `;
-    queryArgs.push(topic);
   }
 
   queryStr += `ORDER BY ${sort_by} ${orderLookup[order]};`;

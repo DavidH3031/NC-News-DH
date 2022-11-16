@@ -7,7 +7,6 @@ const fetchTopics = () => {
 };
 
 const fetchArticles = (topic, sort_by = "created_at", order = "desc") => {
-  const allowedTopics = ["mitch", "cats"];
   const allowedSort = [
     "author",
     "title",
@@ -65,7 +64,9 @@ const fetchArticleById = (id) => {
   return db
     .query(
       `
-    SELECT author, title, article_id, body, topic, created_at, votes
+    SELECT author, title, article_id, body, topic, created_at, votes,
+    (SELECT COUNT(*) FROM comments 
+    WHERE articles.article_id = comments.article_id) as "comment_count"
     FROM articles
     WHERE article_id = $1;`,
       [id]

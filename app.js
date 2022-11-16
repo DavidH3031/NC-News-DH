@@ -13,12 +13,13 @@ const {
   postComment,
   getUsers,
   deleteComment,
+  getEndpoints,
 } = require("./controllers/news.controller");
 const app = express();
 app.use(express.json());
 
 // Endpoints
-
+app.get("/api", getEndpoints);
 app.get("/api/topics", getTopics);
 app.get("/api/users", getUsers);
 app.get("/api/articles", getArticles);

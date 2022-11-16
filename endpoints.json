@@ -11,15 +11,118 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": [
+      "author",
+      "title",
+      "article_id",
+      "topic",
+      "created_at",
+      "votes",
+      "comment_count"
+    ],
     "exampleResponse": {
       "articles": [
         {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+          "author": "butter_bridge",
+          "title": "Living in the shadow of a great man",
+          "article_id": 1,
+          "body": "I find this existence challenging",
+          "topic": "mitch",
+          "created_at": "2020-07-09T20:11:00.000Z",
+          "votes": 100,
+          "comment_count": "11"
+        }
+      ]
+    }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an article based on the ID",
+    "queries": [],
+    "exampleResponse": {
+      "article": [
+        {
+          "author": "butter_bridge",
+          "title": "Living in the shadow of a great man",
+          "article_id": 1,
+          "body": "I find this existence challenging",
+          "topic": "mitch",
+          "created_at": "2020-07-09T20:11:00.000Z",
+          "votes": 100,
+          "comment_count": "11"
+        }
+      ]
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "allows you to update the 'votes' on an article and will return the updated article",
+    "required keys": { "inc_votes": "<ANY NUMBER>" },
+    "exampleSendBody": {
+      "bodyExample": { "inc_votes": 20 },
+      "bodyExample2": { "inc_votes": -20 }
+    },
+    "exampleResponse": {
+      "article": [
+        {
+          "author": "butter_bridge",
+          "title": "Living in the shadow of a great man",
+          "article_id": 1,
+          "body": "I find this existence challenging",
+          "topic": "mitch",
+          "created_at": "2020-07-09T20:11:00.000Z",
+          "votes": 100,
+          "comment_count": "11"
+        }
+      ]
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "shows the comments for the given article_id. If no comments are found it will return an empty array",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 1,
+          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          "article_id": 9,
+          "created_at": "2020-04-06 13:17:00",
+          "votes": 16,
+          "author": "butter_bridge"
+        }
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Allows you to post a comment related to the given article_id",
+    "required keys": { "username": "<existing user>", "body": "<ANY STRING>" },
+    "exampleSendBody": {
+      "bodyExample": { "username": "lurker", "body": "Fake news!!!" }
+    },
+    "exampleResponse": {
+      "comment": [
+        {
+          "comment_id": 5,
+          "author": "lurker",
+          "body": "Fake news!!!",
+          "votes": 20,
+          "created_at": "2020-04-06 13:17:00"
+        }
+      ]
+    }
+  },
+  "DELETE /api/comments/comment_id": {
+    "description": "allows you to delete a comment with given comment_id, this will return a 204 with zero content",
+    "queries": [],
+    "exampleResponse": {}
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users currently registered",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "Kev22_",
+          "name": "Kev",
+          "avatar_url": "https://http.cat/202"
         }
       ]
     }

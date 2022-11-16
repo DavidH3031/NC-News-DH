@@ -26,6 +26,17 @@ describe("/api/topics", () => {
   });
 });
 
+describe("/api", () => {
+  it("GET - 200: Should return a JSON describing all the available endpoints.", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.endpoints).toEqual(expect.any(String));
+      });
+  });
+});
+
 describe("/api/articles", () => {
   it("GET - 200: Should return an array of 'article objects' with the correct properties.", () => {
     return request(app)

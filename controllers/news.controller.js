@@ -7,6 +7,7 @@ const {
   fetchUsers,
   updateVotes,
   deleteCommentById,
+  fetchEndpoints,
 } = require("../models/news.model");
 
 exports.getTopics = (req, res, next) => {
@@ -81,4 +82,10 @@ exports.deleteComment = (req, res, next) => {
       res.status(204).send();
     })
     .catch(next);
+};
+
+exports.getEndpoints = (req, res, next) => {
+  fetchEndpoints().then((endpoints) => {
+    res.send({ endpoints });
+  });
 };

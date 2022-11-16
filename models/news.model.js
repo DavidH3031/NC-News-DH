@@ -1,4 +1,5 @@
 const db = require("../db/connection.js");
+const { readFile } = require("fs/promises");
 
 const fetchTopics = () => {
   return db.query(`SELECT * FROM topics`).then((res) => {
@@ -166,6 +167,12 @@ const deleteCommentById = (id) => {
     });
 };
 
+const fetchEndpoints = () => {
+  return readFile(`${__dirname}/../endpoints.json`, "utf8").then((res) => {
+    return res;
+  });
+};
+
 module.exports = {
   fetchArticleById,
   fetchArticles,
@@ -175,4 +182,5 @@ module.exports = {
   insertComment,
   fetchUsers,
   deleteCommentById,
+  fetchEndpoints,
 };

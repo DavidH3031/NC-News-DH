@@ -11,7 +11,8 @@ const fetchArticles = () => {
     .query(
       `
     SELECT article_id, title, topic, articles.author, articles.created_at, articles.votes, 
-    (SELECT COUNT(*) FROM comments WHERE articles.article_id = comments.article_id) as "comment_count" 
+    (SELECT COUNT(*) FROM comments 
+    WHERE articles.article_id = comments.article_id) as "comment_count" 
     FROM articles
     ORDER BY created_at DESC;
     `
@@ -25,7 +26,9 @@ const fetchArticleById = (id) => {
   return db
     .query(
       `
-    SELECT author, title, article_id, body, topic, created_at, votes
+    SELECT author, title, article_id, body, topic, created_at, votes,
+    (SELECT COUNT(*) FROM comments 
+    WHERE articles.article_id = comments.article_id) as "comment_count"
     FROM articles
     WHERE article_id = $1;`,
       [id]

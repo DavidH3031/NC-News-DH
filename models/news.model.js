@@ -23,20 +23,21 @@ const fetchArticles = (topic, sort_by = "created_at", order = "latest") => {
   if (!allowedSort.includes(sort_by)) {
     return Promise.reject({
       status: 400,
-      msg: `sort_by ${sort_by} is not allowed!`,
+      msg: `sort_by '${sort_by}' is not allowed.`,
     });
   }
 
   if (!Object.keys(orderLookup).includes(order)) {
     return Promise.reject({
       status: 400,
-      msg: `order ${order} is not allowed!`,
+      msg: `order '${order}' does not exist. Please use: 'latest' or 'oldest'`,
     });
   }
 
   let queryStr = `
   SELECT article_id, title, topic, articles.author, articles.created_at, articles.votes, 
-  (SELECT COUNT(*) FROM comments WHERE articles.article_id = comments.article_id) as "comment_count" 
+  (SELECT COUNT(*) FROM comments 
+  WHERE articles.article_id = comments.article_id) as "comment_count" 
   FROM articles
   `;
 
@@ -44,7 +45,7 @@ const fetchArticles = (topic, sort_by = "created_at", order = "latest") => {
     if (!allowedTopics.includes(topic)) {
       return Promise.reject({
         status: 400,
-        msg: `topic ${topic} is not allowed!`,
+        msg: `topic '${topic}' does not exist.`,
       });
     }
     queryStr += `WHERE topic = $1 `;
@@ -52,6 +53,7 @@ const fetchArticles = (topic, sort_by = "created_at", order = "latest") => {
   }
 
   queryStr += `ORDER BY ${sort_by} ${orderLookup[order]};`;
+
   return db.query(queryStr, queryArgs).then((res) => {
     return res.rows;
   });

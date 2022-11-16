@@ -102,6 +102,25 @@ describe("/api/articles", () => {
         });
       });
   });
+  it("GET - 200: Should return an array in ascending order sorted by article ID with the topic of cats.", () => {
+    return request(app)
+      .get("/api/articles?order=oldest&sort_by=article_id&topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("article_id");
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: "cats",
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
@@ -229,6 +248,42 @@ describe("Error Handling", () => {
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid URL");
       });
+  });
+  describe("Query Error Handling", () => {
+    it("GET- 400: Should respond with invalid query when passed an invalid column name in sort_by", () => {
+      return request(app)
+        .get("/api/articles?sort_by=whatcolumn")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("sort_by 'whatcolumn' is not allowed.");
+        });
+    });
+    it("GET- 400: Should respond with 400 when given an incorrect topic", () => {
+      return request(app)
+        .get("/api/articles?topic=coding")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("topic 'coding' does not exist.");
+        });
+    });
+    it("GET- 400: Should respond with 400 when given an invalid order by value", () => {
+      return request(app)
+        .get("/api/articles?order=down")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe(
+            "order 'down' does not exist. Please use: 'latest' or 'oldest'"
+          );
+        });
+    });
+    it("GET- 400: Should respond with 400 when all but one query is valid", () => {
+      return request(app)
+        .get("/api/articles?order=oldest&sort_by=whatcolumn&topic=mitch")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("sort_by 'whatcolumn' is not allowed.");
+        });
+    });
   });
   it("GET - 400: Should return 400 with error msg of 'Bad Request - Invalid datatype for ID'", () => {
     return request(app)

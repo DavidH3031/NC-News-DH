@@ -9,6 +9,7 @@ const {
   deleteCommentById,
   fetchUserByName,
   updateCommentVotes,
+  insertArticle,
 } = require("../models/news.model");
 const { readFile } = require("fs/promises");
 
@@ -112,4 +113,11 @@ exports.patchCommentVotes = (req, res, next) => {
       res.send({ comment });
     })
     .catch(next);
+};
+
+exports.postArticle = (req, res, next) => {
+  const articleBody = req.body;
+  insertArticle(articleBody).then((article) => {
+    res.status(201).send({ article });
+  });
 };

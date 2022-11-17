@@ -208,6 +208,27 @@ const updateCommentVotes = (id, inc) => {
     });
 };
 
+const insertArticle = ({ title, topic, author, body }) => {
+  const date = new Date();
+  return db
+    .query(
+      `
+    INSERT INTO articles 
+    (title, topic, author, body, created_at, votes) 
+    VALUES 
+    ($1, $2, $3, $4, $5, $6)
+    RETURNING *;
+    `,
+      [title, topic, author, body, date.toISOString(), 0]
+    )
+    .then((res) => {
+      return fetchArticleById(res.rows[0].article_id);
+    })
+    .then((article) => {
+      return article;
+    });
+};
+
 module.exports = {
   fetchArticleById,
   fetchArticles,
@@ -219,4 +240,5 @@ module.exports = {
   deleteCommentById,
   fetchUserByName,
   updateCommentVotes,
+  insertArticle,
 };

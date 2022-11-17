@@ -189,6 +189,29 @@ describe("/api/articles", () => {
         });
       });
   });
+  it("POST - 201: Should return the newly created object", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "rogersop",
+        title: "TestTitle",
+        body: "TestBodyTestBodyTestBodyTestBodyTestBody",
+        topic: "mitch",
+      })
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: expect.any(Number),
+          votes: expect.any(Number),
+          comment_count: expect.any(String),
+          author: "rogersop",
+          title: "TestTitle",
+          body: "TestBodyTestBodyTestBodyTestBodyTestBody",
+          topic: "mitch",
+          created_at: expect.any(String),
+        });
+      });
+  });
 });
 
 describe("/api/articles/:article_id", () => {

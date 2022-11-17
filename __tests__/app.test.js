@@ -31,8 +31,55 @@ describe("/api", () => {
     return request(app)
       .get("/api")
       .expect(200)
-      .then(({ body }) => {
-        expect(body.endpoints).toEqual(expect.any(String));
+      .then(({ body: { endpoints } }) => {
+        expect(endpoints).toEqual(expect.any(String));
+      });
+  });
+  it("GET - 200: Should return a JSON with the correct keys.", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        const epObj = JSON.parse(endpoints);
+        expect(Object.keys(epObj)).toEqual([
+          "GET /api",
+          "GET /api/topics",
+          "GET /api/articles",
+          "GET /api/articles/:article_id",
+          "PATCH /api/articles/:article_id",
+          "GET /api/articles/:article_id/comments",
+          "POST /api/articles/:article_id/comments",
+          "DELETE /api/comments/comment_id",
+          "GET /api/users",
+        ]);
+      });
+  });
+  it("GET - 200: Each key should have a description", () => {
+    const keys = [
+      "GET /api",
+      "GET /api/topics",
+      "GET /api/articles",
+      "GET /api/articles/:article_id",
+      "PATCH /api/articles/:article_id",
+      "GET /api/articles/:article_id/comments",
+      "POST /api/articles/:article_id/comments",
+      "DELETE /api/comments/comment_id",
+      "GET /api/users",
+    ];
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        const epObj = JSON.parse(endpoints);
+        expect(epObj["GET /api/topics"].description).toBe(
+          "serves an array of all topics"
+        );
+        keys.forEach((key) => {
+          expect(epObj[key]).toMatchObject({
+            description: expect.any(String),
+            exampleResponse: expect.any(Object),
+          });
+        });
       });
   });
 });

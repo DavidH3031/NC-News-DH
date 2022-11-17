@@ -7,8 +7,8 @@ const {
   fetchUsers,
   updateVotes,
   deleteCommentById,
-  fetchEndpoints,
 } = require("../models/news.model");
+const { readFile } = require("fs/promises");
 
 exports.getTopics = (req, res, next) => {
   fetchTopics()
@@ -85,7 +85,9 @@ exports.deleteComment = (req, res, next) => {
 };
 
 exports.getEndpoints = (req, res, next) => {
-  fetchEndpoints().then((endpoints) => {
-    res.send({ endpoints });
-  });
+  readFile(`${__dirname}/../endpoints.json`, "utf-8")
+    .then((endpoints) => {
+      res.send({ endpoints });
+    })
+    .catch(next);
 };

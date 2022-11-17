@@ -166,6 +166,26 @@ const deleteCommentById = (id) => {
     });
 };
 
+const fetchUserByName = (username) => {
+  return db
+    .query(
+      `
+    SELECT * FROM users 
+    WHERE username = $1; 
+    `,
+      [username]
+    )
+    .then((res) => {
+      if (!res.rows.length) {
+        return Promise.reject({
+          status: 404,
+          msg: "user with that username does not exist",
+        });
+      }
+      return res.rows[0];
+    });
+};
+
 module.exports = {
   fetchArticleById,
   fetchArticles,
@@ -175,4 +195,5 @@ module.exports = {
   insertComment,
   fetchUsers,
   deleteCommentById,
+  fetchUserByName,
 };

@@ -7,6 +7,7 @@ const {
   fetchUsers,
   updateVotes,
   deleteCommentById,
+  fetchUserByName,
 } = require("../models/news.model");
 const { readFile } = require("fs/promises");
 
@@ -89,6 +90,15 @@ exports.getEndpoints = (req, res, next) => {
     .then((endpoints) => {
       endpoints = JSON.parse(endpoints);
       res.send({ endpoints });
+    })
+    .catch(next);
+};
+
+exports.getUserByName = (req, res, next) => {
+  const username = req.params.username;
+  fetchUserByName(username)
+    .then((user) => {
+      res.send({ user });
     })
     .catch(next);
 };

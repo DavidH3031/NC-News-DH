@@ -8,6 +8,7 @@ const {
   updateVotes,
   deleteCommentById,
   fetchUserByName,
+  updateCommentVotes,
 } = require("../models/news.model");
 const { readFile } = require("fs/promises");
 
@@ -99,6 +100,16 @@ exports.getUserByName = (req, res, next) => {
   fetchUserByName(username)
     .then((user) => {
       res.send({ user });
+    })
+    .catch(next);
+};
+
+exports.patchCommentVotes = (req, res, next) => {
+  const comment_id = req.params.comment_id;
+  const increment = req.body.inc_votes;
+  updateCommentVotes(comment_id, increment)
+    .then((comment) => {
+      res.send({ comment });
     })
     .catch(next);
 };

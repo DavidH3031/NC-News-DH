@@ -117,6 +117,21 @@
     "queries": [],
     "exampleResponse": {}
   },
+  "PATCH /api/comments/:comment_id": {
+    "description": "allows you to update the 'votes' on a comment and will return the updated comment",
+    "queries": [],
+    "exampleResponse": {
+      "comment": [
+        {
+          "comment_id": 5,
+          "author": "lurker",
+          "body": "Fake news!!!",
+          "votes": 36,
+          "created_at": "2020-04-06 13:17:00"
+        }
+      ]
+    }
+  },
   "GET /api/users": {
     "description": "serves an array of all users currently registered",
     "queries": [],

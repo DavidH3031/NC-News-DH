@@ -333,6 +333,23 @@ describe("/api/comments/:comment_id", () => {
         expect(body).toEqual({});
       });
   });
+  it("PATCH - 200: Should return an object with updated votes", () => {
+    const plusBody = { inc_votes: 20 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(plusBody)
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          comment_id: 1,
+          body: expect.any(String),
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          votes: 36,
+          created_at: expect.any(String),
+        });
+      });
+  });
 });
 
 describe("Error Handling", () => {
@@ -530,6 +547,48 @@ describe("Further Error Handling", () => {
         .expect(404)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("user with that username does not exist");
+        });
+    });
+  });
+  describe("/api/comments/:comment_id", () => {
+    it("PATCH - 404: Valid ID but not found.", () => {
+      const body = { inc_votes: 1 };
+      return request(app)
+        .patch("/api/comments/99999")
+        .send(body)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid ID: comment not found!");
+        });
+    });
+    it("PATCH - 400: Invalid ID datatype passed into URL", () => {
+      const body = { inc_votes: 1 };
+      return request(app)
+        .patch("/api/comments/HELLO")
+        .send(body)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
+        });
+    });
+    it("PATCH - 400: 'inc_votes' not found on body", () => {
+      const body = { in_voe: 1 };
+      return request(app)
+        .patch("/api/comments/1")
+        .send(body)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Key "inc_votes" is missing');
+        });
+    });
+    it("PATCH - 400: 'inc_votes' was given wrong datatype", () => {
+      const body = { inc_votes: "Hello" };
+      return request(app)
+        .patch("/api/comments/1")
+        .send(body)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
         });
     });
   });

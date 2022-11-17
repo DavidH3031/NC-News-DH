@@ -87,6 +87,7 @@ exports.deleteComment = (req, res, next) => {
 exports.getEndpoints = (req, res, next) => {
   readFile(`${__dirname}/../endpoints.json`, "utf-8")
     .then((endpoints) => {
+      endpoints = JSON.parse(endpoints);
       res.send({ endpoints });
     })
     .catch(next);

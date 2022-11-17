@@ -32,7 +32,7 @@ describe("/api", () => {
       .get("/api")
       .expect(200)
       .then(({ body: { endpoints } }) => {
-        expect(endpoints).toEqual(expect.any(String));
+        expect(endpoints).toEqual(expect.any(Object));
       });
   });
   it("GET - 200: Should return a JSON with the correct keys.", () => {
@@ -40,8 +40,7 @@ describe("/api", () => {
       .get("/api")
       .expect(200)
       .then(({ body: { endpoints } }) => {
-        const epObj = JSON.parse(endpoints);
-        expect(Object.keys(epObj)).toEqual([
+        expect(Object.keys(endpoints)).toEqual([
           "GET /api",
           "GET /api/topics",
           "GET /api/articles",
@@ -70,12 +69,11 @@ describe("/api", () => {
       .get("/api")
       .expect(200)
       .then(({ body: { endpoints } }) => {
-        const epObj = JSON.parse(endpoints);
-        expect(epObj["GET /api/topics"].description).toBe(
+        expect(endpoints["GET /api/topics"].description).toBe(
           "serves an array of all topics"
         );
         keys.forEach((key) => {
-          expect(epObj[key]).toMatchObject({
+          expect(endpoints[key]).toMatchObject({
             description: expect.any(String),
             exampleResponse: expect.any(Object),
           });

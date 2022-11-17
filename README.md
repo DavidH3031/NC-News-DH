@@ -20,7 +20,7 @@ You can **delete**: Comments.
 
 Using the provided URL will allow you to interact with the API via the web. Listed below are the available endpoints and a very brief description.
 
-- GET /api - Returns a list of endpoints in **string** format (must be parsed).
+- GET /api - Returns a list of endpoints in **JSON** format (must be parsed).
 - GET /api/users - Returns a list of users currently registered.
 - GET /api/topics - Returns a list of topics.
 - GET /api/articles - Returns a list of articles.

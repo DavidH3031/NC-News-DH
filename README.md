@@ -22,6 +22,7 @@ Using the provided URL will allow you to interact with the API via the web. List
 
 - GET /api - Returns a list of endpoints in **JSON** format (must be parsed).
 - GET /api/users - Returns a list of users currently registered.
+- GET /api/users/:username - Returns a single user.
 - GET /api/topics - Returns a list of topics.
 - GET /api/articles - Returns a list of articles.
 - GET /api/articles/:article_id - Returns a specific article.

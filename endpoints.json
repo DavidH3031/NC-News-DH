@@ -112,7 +112,7 @@
       ]
     }
   },
-  "DELETE /api/comments/comment_id": {
+  "DELETE /api/comments/:comment_id": {
     "description": "allows you to delete a comment with given comment_id, this will return a 204 with zero content",
     "queries": [],
     "exampleResponse": {}
@@ -122,6 +122,19 @@
     "queries": [],
     "exampleResponse": {
       "users": [
+        {
+          "username": "Kev22_",
+          "name": "Kev",
+          "avatar_url": "https://http.cat/202"
+        }
+      ]
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "serves a single user provided the username given exists.",
+    "queries": [],
+    "exampleResponse": {
+      "user": [
         {
           "username": "Kev22_",
           "name": "Kev",

@@ -36,21 +36,24 @@ describe("/api", () => {
       });
   });
   it("GET - 200: Should return a JSON with the correct keys.", () => {
+    const endpointKeys = [
+      "GET /api",
+      "GET /api/topics",
+      "GET /api/articles",
+      "GET /api/articles/:article_id",
+      "PATCH /api/articles/:article_id",
+      "GET /api/articles/:article_id/comments",
+      "POST /api/articles/:article_id/comments",
+      "DELETE /api/comments/:comment_id",
+      "GET /api/users",
+    ];
     return request(app)
       .get("/api")
       .expect(200)
       .then(({ body: { endpoints } }) => {
-        expect(Object.keys(endpoints)).toEqual([
-          "GET /api",
-          "GET /api/topics",
-          "GET /api/articles",
-          "GET /api/articles/:article_id",
-          "PATCH /api/articles/:article_id",
-          "GET /api/articles/:article_id/comments",
-          "POST /api/articles/:article_id/comments",
-          "DELETE /api/comments/comment_id",
-          "GET /api/users",
-        ]);
+        expect(Object.keys(endpoints)).toEqual(
+          expect.arrayContaining(endpointKeys)
+        );
       });
   });
   it("GET - 200: Each key should have a description", () => {
@@ -62,7 +65,7 @@ describe("/api", () => {
       "PATCH /api/articles/:article_id",
       "GET /api/articles/:article_id/comments",
       "POST /api/articles/:article_id/comments",
-      "DELETE /api/comments/comment_id",
+      "DELETE /api/comments/:comment_id",
       "GET /api/users",
     ];
     return request(app)

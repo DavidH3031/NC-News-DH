@@ -26,6 +26,64 @@ describe("/api/topics", () => {
   });
 });
 
+describe("/api", () => {
+  it("GET - 200: Should return a JSON describing all the available endpoints.", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        expect(endpoints).toEqual(expect.any(String));
+      });
+  });
+  it("GET - 200: Should return a JSON with the correct keys.", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        const epObj = JSON.parse(endpoints);
+        expect(Object.keys(epObj)).toEqual([
+          "GET /api",
+          "GET /api/topics",
+          "GET /api/articles",
+          "GET /api/articles/:article_id",
+          "PATCH /api/articles/:article_id",
+          "GET /api/articles/:article_id/comments",
+          "POST /api/articles/:article_id/comments",
+          "DELETE /api/comments/comment_id",
+          "GET /api/users",
+        ]);
+      });
+  });
+  it("GET - 200: Each key should have a description", () => {
+    const keys = [
+      "GET /api",
+      "GET /api/topics",
+      "GET /api/articles",
+      "GET /api/articles/:article_id",
+      "PATCH /api/articles/:article_id",
+      "GET /api/articles/:article_id/comments",
+      "POST /api/articles/:article_id/comments",
+      "DELETE /api/comments/comment_id",
+      "GET /api/users",
+    ];
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        const epObj = JSON.parse(endpoints);
+        expect(epObj["GET /api/topics"].description).toBe(
+          "serves an array of all topics"
+        );
+        keys.forEach((key) => {
+          expect(epObj[key]).toMatchObject({
+            description: expect.any(String),
+            exampleResponse: expect.any(Object),
+          });
+        });
+      });
+  });
+});
+
 describe("/api/articles", () => {
   it("GET - 200: Should return an array of 'article objects' with the correct properties.", () => {
     return request(app)

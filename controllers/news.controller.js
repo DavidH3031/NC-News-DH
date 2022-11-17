@@ -8,6 +8,7 @@ const {
   updateVotes,
   deleteCommentById,
 } = require("../models/news.model");
+const { readFile } = require("fs/promises");
 
 exports.getTopics = (req, res, next) => {
   fetchTopics()
@@ -79,6 +80,14 @@ exports.deleteComment = (req, res, next) => {
   deleteCommentById(comment_id)
     .then(() => {
       res.status(204).send();
+    })
+    .catch(next);
+};
+
+exports.getEndpoints = (req, res, next) => {
+  readFile(`${__dirname}/../endpoints.json`, "utf-8")
+    .then((endpoints) => {
+      res.send({ endpoints });
     })
     .catch(next);
 };

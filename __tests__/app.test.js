@@ -36,21 +36,24 @@ describe("/api", () => {
       });
   });
   it("GET - 200: Should return a JSON with the correct keys.", () => {
+    const endpointKeys = [
+      "GET /api",
+      "GET /api/topics",
+      "GET /api/articles",
+      "GET /api/articles/:article_id",
+      "PATCH /api/articles/:article_id",
+      "GET /api/articles/:article_id/comments",
+      "POST /api/articles/:article_id/comments",
+      "DELETE /api/comments/:comment_id",
+      "GET /api/users",
+    ];
     return request(app)
       .get("/api")
       .expect(200)
       .then(({ body: { endpoints } }) => {
-        expect(Object.keys(endpoints)).toEqual([
-          "GET /api",
-          "GET /api/topics",
-          "GET /api/articles",
-          "GET /api/articles/:article_id",
-          "PATCH /api/articles/:article_id",
-          "GET /api/articles/:article_id/comments",
-          "POST /api/articles/:article_id/comments",
-          "DELETE /api/comments/comment_id",
-          "GET /api/users",
-        ]);
+        expect(Object.keys(endpoints)).toEqual(
+          expect.arrayContaining(endpointKeys)
+        );
       });
   });
   it("GET - 200: Each key should have a description", () => {
@@ -62,7 +65,7 @@ describe("/api", () => {
       "PATCH /api/articles/:article_id",
       "GET /api/articles/:article_id/comments",
       "POST /api/articles/:article_id/comments",
-      "DELETE /api/comments/comment_id",
+      "DELETE /api/comments/:comment_id",
       "GET /api/users",
     ];
     return request(app)
@@ -304,6 +307,21 @@ describe("/api/users", () => {
         });
       });
   });
+  describe("/api/users/:username", () => {
+    it("GET - 200: Should return a user object with the correct properties", () => {
+      return request(app)
+        .get("/api/users/rogersop")
+        .expect(200)
+        .then(({ body: { user } }) => {
+          expect(user).toMatchObject({
+            username: "rogersop",
+            name: "paul",
+            avatar_url:
+              "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+          });
+        });
+    });
+  });
 });
 
 describe("/api/comments/:comment_id", () => {
@@ -501,5 +519,18 @@ describe("Error Handling", () => {
       .then(({ body }) => {
         expect(body.msg).toBe("Username does not exist!");
       });
+  });
+});
+
+describe("Further Error Handling", () => {
+  describe("/api/users/:username", () => {
+    it("GET - 404: Should return a 404 and error message if user does not exist", () => {
+      return request(app)
+        .get("/api/users/Kev22")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("user with that username does not exist");
+        });
+    });
   });
 });

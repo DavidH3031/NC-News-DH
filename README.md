@@ -30,6 +30,7 @@ Using the provided URL will allow you to interact with the API via the web. List
 - GET /api/articles/:article_id/comments - Returns a list of comments for article.
 - POST /api/articles/:article_id/comments - Allows POSTing of a new comment.
 - DELETE /api/comments/comment_id - Allows you to **delete** comments by ID.
+- PATCH /api/comments/:comment_id - Allows you to add/subtract votes.
 
 # Set-up for self-hosting.
 

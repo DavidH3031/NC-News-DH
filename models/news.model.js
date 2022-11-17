@@ -186,6 +186,28 @@ const fetchUserByName = (username) => {
     });
 };
 
+const updateCommentVotes = (id, inc) => {
+  return db
+    .query(
+      `
+        UPDATE comments 
+        SET votes = votes + $1
+        WHERE comment_id = $2
+        RETURNING *;
+      `,
+      [inc, id]
+    )
+    .then((res) => {
+      if (!res.rows.length) {
+        return Promise.reject({
+          status: 404,
+          msg: "Invalid ID: comment not found!",
+        });
+      }
+      return res.rows[0];
+    });
+};
+
 module.exports = {
   fetchArticleById,
   fetchArticles,
@@ -196,4 +218,5 @@ module.exports = {
   fetchUsers,
   deleteCommentById,
   fetchUserByName,
+  updateCommentVotes,
 };

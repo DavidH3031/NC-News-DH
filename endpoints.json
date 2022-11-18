@@ -112,7 +112,10 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "shows the comments for the given article_id. If no comments are found it will return an empty array",
-    "queries": [],
+    "queries": {
+      "limit": "Any number. Default is 10",
+      "p": "Page number. Defaults to 1"
+    },
     "exampleResponse": {
       "comments": [
         {

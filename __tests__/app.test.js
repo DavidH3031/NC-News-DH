@@ -220,7 +220,6 @@ describe("/api/articles", () => {
         .then(({ body }) => {
           expect(body.articles.length).toBe(10);
           expect(body.total_count).toBe("12");
-
           expect(body.articles).toBeSortedBy("created_at", {
             descending: true,
           });
@@ -292,6 +291,76 @@ describe("/api/articles", () => {
         });
     });
   });
+  describe("/api/articles/:article_id/comments", () => {
+    it("GET - 200: Should only return 10 comments as a default", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments.length).toBe(10);
+          body.comments.forEach((comment) => {
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            });
+          });
+        });
+    });
+    it("GET - 200: Should only return 5 comments when given a limit of 5 and given a page of 2", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5&p=2")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments.length).toBe(5);
+          body.comments.forEach((comment) => {
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            });
+          });
+        });
+    });
+    it("GET - 200: Should only return 5 comments when given a limit of 5", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments.length).toBe(5);
+          body.comments.forEach((comment) => {
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            });
+          });
+        });
+    });
+    it("GET - 200: Should return an empty array if page * limit is more than total amount of comments", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=10&p=3")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments.length).toBe(0);
+          body.comments.forEach((comment) => {
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            });
+          });
+        });
+    });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
@@ -351,7 +420,7 @@ describe("/api/articles/:article_id", () => {
   describe("/api/articles/:article_id/comments", () => {
     it("GET - 200: Should return an array of comments for given article which should have the correct properties", () => {
       return request(app)
-        .get("/api/articles/1/comments")
+        .get("/api/articles/1/comments?limit=20")
         .expect(200)
         .then(({ body }) => {
           expect(body.comments.length).toBe(11);
@@ -507,9 +576,25 @@ describe("Error Handling", () => {
           expect(body.msg).toBe("'limit' must be a number!");
         });
     });
+    it("GET - 400: Should respond with 400 limit is passed an invalid datatype", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=hello")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("'limit' must be a number!");
+        });
+    });
     it("GET - 400: Should respond with 400 page is passed an invalid datatype", () => {
       return request(app)
         .get("/api/articles?p=hello")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("'p' must be a number!");
+        });
+    });
+    it("GET - 400: Should respond with 400 page is passed an invalid datatype", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=hello")
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("'p' must be a number!");

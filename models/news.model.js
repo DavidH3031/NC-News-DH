@@ -32,6 +32,16 @@ const fetchArticles = (
     }
   }
 
+  if (page !== 1) {
+    const pageRegex = /^[0-9]+$/g;
+    if (!pageRegex.test(limit)) {
+      return Promise.reject({
+        status: 400,
+        msg: "'page' must be a number!",
+      });
+    }
+  }
+
   if (!allowedSort.includes(sort_by)) {
     return Promise.reject({
       status: 404,
@@ -97,23 +107,42 @@ const fetchArticleById = (id) => {
     });
 };
 
-const fetchCommentsById = (id) => {
+const fetchCommentsById = (id, limit = 10, page = 1) => {
   return fetchArticleById(id)
     .then(() => {
-      return db.query(
-        `
+      if (limit !== 10) {
+        const limitRegex = /^[0-9]+$/g;
+        if (!limitRegex.test(limit)) {
+          return Promise.reject({
+            status: 400,
+            msg: "'limit' must be a number!",
+          });
+        }
+      }
+      if (page !== 1) {
+        const pageRegex = /^[0-9]+$/g;
+        if (!pageRegex.test(limit)) {
+          return Promise.reject({
+            status: 400,
+            msg: "'page' must be a number!",
+          });
+        }
+      }
+
+      let queryStr = `
       SELECT comment_id, votes, created_at, author, body 
       FROM comments
       WHERE article_id = $1
-      ORDER BY created_at DESC;
-      `,
-        [id]
-      );
+      ORDER BY created_at DESC `;
+
+      queryStr += `LIMIT ${limit} OFFSET ${page * limit - limit};`;
+      return db.query(queryStr, [id]);
     })
     .then((res) => {
       return res.rows;
     });
 };
+
 const insertComment = (id, { username, body }) => {
   const date = new Date();
   return db

@@ -11,6 +11,7 @@ const {
   updateCommentVotes,
   insertArticle,
   fetchArticlesCount,
+  insertTopic,
 } = require("../models/news.model");
 const { readFile } = require("fs/promises");
 
@@ -127,6 +128,15 @@ exports.postArticle = (req, res, next) => {
   insertArticle(articleBody)
     .then((article) => {
       res.status(201).send({ article });
+    })
+    .catch(next);
+};
+
+exports.postTopic = (req, res, next) => {
+  const topicBody = req.body;
+  insertTopic(topicBody)
+    .then((topic) => {
+      res.status(201).send({ topic });
     })
     .catch(next);
 };

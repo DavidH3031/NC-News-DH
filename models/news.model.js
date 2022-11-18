@@ -285,6 +285,26 @@ const fetchArticlesCount = () => {
     });
 };
 
+const insertTopic = ({ slug, description }) => {
+  if (!description) {
+    return Promise.reject({ status: 400, msg: 'Key "description" is missing' });
+  }
+  return db
+    .query(
+      `
+    INSERT INTO topics
+    (slug, description)
+    VALUES
+    ($1, $2)
+    RETURNING *
+    `,
+      [slug, description]
+    )
+    .then((topic) => {
+      return topic.rows[0];
+    });
+};
+
 module.exports = {
   fetchArticleById,
   fetchArticles,
@@ -298,4 +318,5 @@ module.exports = {
   updateCommentVotes,
   insertArticle,
   fetchArticlesCount,
+  insertTopic,
 };

@@ -11,6 +11,8 @@ exports.handlePSQLErrors = (err, req, res, next) => {
   } else if (err.code === "23502") {
     let msg = "Invalid POST body!";
     if (err.column === "title") msg = 'Key "title" is missing';
+    if (err.column === "slug") msg = 'Key "slug" is missing';
+    if (err.column === "description") msg = 'Key "description" is missing';
     if (err.column === "topic") msg = 'Key "topic" is missing';
     if (err.column === "body") msg = 'Key "body" is missing';
     if (err.column === "author") msg = 'Key "username/author" is missing';

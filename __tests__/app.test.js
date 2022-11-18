@@ -24,6 +24,22 @@ describe("/api/topics", () => {
         });
       });
   });
+  it("POST - 201: Should return the new topic object.", () => {
+    const topicObj = {
+      slug: "topic name here",
+      description: "description here",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(topicObj)
+      .expect(201)
+      .then(({ body: { topic } }) => {
+        expect(topic).toMatchObject({
+          slug: "topic name here",
+          description: "description here",
+        });
+      });
+  });
 });
 
 describe("/api", () => {
@@ -851,6 +867,32 @@ describe("Further Error Handling", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe('Key "username/author" is missing');
+        });
+    });
+  });
+  describe("/api/topics", () => {
+    it("POST - 400: Missing 'slug' from the request body.", () => {
+      const topicObj = {
+        description: "description here",
+      };
+      return request(app)
+        .post("/api/topics")
+        .send(topicObj)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Key "slug" is missing');
+        });
+    });
+    it("POST - 400: Missing 'description' from the request body.", () => {
+      const topicObj = {
+        slug: "topic name here",
+      };
+      return request(app)
+        .post("/api/topics")
+        .send(topicObj)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Key "description" is missing');
         });
     });
   });

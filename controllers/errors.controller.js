@@ -6,6 +6,8 @@ exports.handleServerErrors = (err, req, res, next) => {
 exports.handlePSQLErrors = (err, req, res, next) => {
   if (err.code === "22P02") {
     res.status(400).send({ msg: "Bad Request - Invalid datatype for ID" });
+  } else if (err.code === "42703") {
+    res.status(400).send({ msg: "'p' must be a number!" });
   } else if (err.code === "23502") {
     let msg = "Invalid POST body!";
     if (err.column === "title") msg = 'Key "title" is missing';

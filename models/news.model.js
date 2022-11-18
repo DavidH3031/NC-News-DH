@@ -6,7 +6,13 @@ const fetchTopics = () => {
   });
 };
 
-const fetchArticles = (topic, sort_by = "created_at", order = "desc") => {
+const fetchArticles = (
+  topic,
+  sort_by = "created_at",
+  order = "desc",
+  limit = 10,
+  page = 1
+) => {
   const allowedSort = [
     "author",
     "title",
@@ -18,6 +24,13 @@ const fetchArticles = (topic, sort_by = "created_at", order = "desc") => {
   ];
   const orderLookup = { asc: "asc", desc: "desc" };
   const queryArgs = [];
+
+  if (limit !== 10) {
+    const limitRegex = /^[0-9]+$/g;
+    if (!limitRegex.test(limit)) {
+      return Promise.reject({ status: 400, msg: "'limit' must be a number!" });
+    }
+  }
 
   if (!allowedSort.includes(sort_by)) {
     return Promise.reject({
@@ -53,7 +66,9 @@ const fetchArticles = (topic, sort_by = "created_at", order = "desc") => {
     }
   }
 
-  queryStr += `ORDER BY ${sort_by} ${orderLookup[order]};`;
+  queryStr += `ORDER BY ${sort_by} ${orderLookup[order]}\n`;
+
+  queryStr += `LIMIT ${limit} OFFSET ${page * limit - limit};`;
 
   return db.query(queryStr, queryArgs).then((res) => {
     return res.rows;
@@ -229,6 +244,18 @@ const insertArticle = ({ title, topic, author, body }) => {
     });
 };
 
+const fetchArticlesCount = () => {
+  return db
+    .query(
+      `
+    SELECT COUNT(*) FROM articles;
+    `
+    )
+    .then((counter) => {
+      return counter.rows[0].count;
+    });
+};
+
 module.exports = {
   fetchArticleById,
   fetchArticles,
@@ -241,4 +268,5 @@ module.exports = {
   fetchUserByName,
   updateCommentVotes,
   insertArticle,
+  fetchArticlesCount,
 };

@@ -10,6 +10,7 @@ const {
   fetchUserByName,
   updateCommentVotes,
   insertArticle,
+  fetchArticlesCount,
 } = require("../models/news.model");
 const { readFile } = require("fs/promises");
 
@@ -25,9 +26,13 @@ exports.getArticles = (req, res, next) => {
   const topic = req.query.topic;
   const sort_by = req.query.sort_by;
   const order = req.query.order;
-  fetchArticles(topic, sort_by, order)
-    .then((articles) => {
-      res.send({ articles });
+  const limit = req.query.limit;
+  const page = req.query.p;
+  const articles = fetchArticles(topic, sort_by, order, limit, page);
+  const count = fetchArticlesCount();
+  Promise.all([articles, count])
+    .then((result) => {
+      res.send({ articles: result[0], total_count: result[1] });
     })
     .catch(next);
 };

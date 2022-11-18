@@ -15,13 +15,21 @@
   "GET /api/articles": {
     "description": "serves an array of all topics",
     "queries": [
-      "author",
-      "title",
-      "article_id",
-      "topic",
-      "created_at",
-      "votes",
-      "comment_count"
+      {
+        "sort_by": [
+          "author",
+          "title",
+          "article_id",
+          "topic",
+          "created_at",
+          "votes",
+          "comment_count"
+        ],
+        "topic": ["coding", "football", "cooking"],
+        "order": ["asc", "desc"],
+        "limit": "Any number. Default is 10",
+        "p": "Page number. Defaults to 1"
+      }
     ],
     "exampleResponse": {
       "articles": [

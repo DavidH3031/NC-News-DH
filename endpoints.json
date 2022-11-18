@@ -12,6 +12,14 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "Allows you to post a new topic with a description for users to define their articles",
+    "queries": [],
+    "exampleSendBody": { "slug": "football", "description": "Footie!" },
+    "exampleResponse": {
+      "topics": [{ "slug": "football", "description": "Footie!" }]
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all topics",
     "queries": [

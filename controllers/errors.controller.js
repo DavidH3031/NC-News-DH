@@ -8,8 +8,10 @@ exports.handlePSQLErrors = (err, req, res, next) => {
     res.status(400).send({ msg: "Bad Request - Invalid datatype for ID" });
   } else if (err.code === "23502") {
     let msg = "Invalid POST body!";
+    if (err.column === "title") msg = 'Key "title" is missing';
+    if (err.column === "topic") msg = 'Key "topic" is missing';
     if (err.column === "body") msg = 'Key "body" is missing';
-    if (err.column === "author") msg = 'Key "username" is missing';
+    if (err.column === "author") msg = 'Key "username/author" is missing';
     if (err.column === "votes") msg = 'Key "inc_votes" is missing';
     res.status(400).send({ msg });
   } else if (

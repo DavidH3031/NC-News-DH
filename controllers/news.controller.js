@@ -117,7 +117,9 @@ exports.patchCommentVotes = (req, res, next) => {
 
 exports.postArticle = (req, res, next) => {
   const articleBody = req.body;
-  insertArticle(articleBody).then((article) => {
-    res.status(201).send({ article });
-  });
+  insertArticle(articleBody)
+    .then((article) => {
+      res.status(201).send({ article });
+    })
+    .catch(next);
 };

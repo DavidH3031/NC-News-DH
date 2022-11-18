@@ -25,6 +25,7 @@ Using the provided URL will allow you to interact with the API via the web. List
 - GET /api/users/:username - Returns a single user.
 - GET /api/topics - Returns a list of topics.
 - GET /api/articles - Returns a list of articles.
+- POST /api/articles - Allows you to post a new article.
 - GET /api/articles/:article_id - Returns a specific article.
 - PATCH /api/articles/:article_id - Allows you to add/subtract votes.
 - GET /api/articles/:article_id/comments - Returns a list of comments for article.

@@ -189,6 +189,29 @@ describe("/api/articles", () => {
         });
       });
   });
+  it("POST - 201: Should return the newly created object", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "rogersop",
+        title: "TestTitle",
+        body: "TestBodyTestBodyTestBodyTestBodyTestBody",
+        topic: "mitch",
+      })
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: expect.any(Number),
+          votes: expect.any(Number),
+          comment_count: expect.any(String),
+          author: "rogersop",
+          title: "TestTitle",
+          body: "TestBodyTestBodyTestBodyTestBodyTestBody",
+          topic: "mitch",
+          created_at: expect.any(String),
+        });
+      });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
@@ -504,7 +527,7 @@ describe("Error Handling", () => {
       .send(comment)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Key "username" is missing');
+        expect(body.msg).toBe('Key "username/author" is missing');
       });
   });
   it("POST - 400: Body key spelt incorrectly", () => {
@@ -524,7 +547,7 @@ describe("Error Handling", () => {
       .send(comment)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('Key "username" is missing');
+        expect(body.msg).toBe('Key "username/author" is missing');
       });
   });
   it("POST - 400: Body fails schema validation. Username does not exist.", () => {
@@ -589,6 +612,64 @@ describe("Further Error Handling", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
+        });
+    });
+  });
+  describe("/api/articles", () => {
+    it("POST - 400: Missing 'title' from the request body.", () => {
+      const article = {
+        author: "rogersop",
+        body: "TestBodyTestBodyTestBodyTestBodyTestBody",
+        topic: "mitch",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(article)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Key "title" is missing');
+        });
+    });
+    it("POST - 400: Missing 'body' from the request body.", () => {
+      const article = {
+        author: "rogersop",
+        title: "testytest",
+        topic: "mitch",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(article)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Key "body" is missing');
+        });
+    });
+    it("POST - 400: Missing 'topic' from the request body.", () => {
+      const article = {
+        author: "rogersop",
+        title: "testytest",
+        body: "testbodytestbodytestbodytestbodytestbody",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(article)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Key "topic" is missing');
+        });
+    });
+    it("POST - 400: Missing 'author' from the request body.", () => {
+      const article = {
+        title: "testytest",
+        body: "testbodytestbodytestbodytestbodytestbody",
+        topic: "mitch",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(article)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Key "username/author" is missing');
         });
     });
   });

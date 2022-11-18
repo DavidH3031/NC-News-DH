@@ -12,6 +12,7 @@ const {
   insertArticle,
   fetchArticlesCount,
   insertTopic,
+  deleteArticleById,
 } = require("../models/news.model");
 const { readFile } = require("fs/promises");
 
@@ -137,6 +138,15 @@ exports.postTopic = (req, res, next) => {
   insertTopic(topicBody)
     .then((topic) => {
       res.status(201).send({ topic });
+    })
+    .catch(next);
+};
+
+exports.deleteArticle = (req, res, next) => {
+  const articleId = req.params.article_id;
+  deleteArticleById(articleId)
+    .then(() => {
+      res.status(204).send();
     })
     .catch(next);
 };

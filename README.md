@@ -27,6 +27,7 @@ Using the provided URL will allow you to interact with the API via the web. List
 - POST /api/topics - Allows you to post a new topic.
 - GET /api/articles - Returns a list of articles.
 - POST /api/articles - Allows you to post a new article.
+- DELETE /api/articles - Allows you to **delete** articles by ID.
 - GET /api/articles/:article_id - Returns a specific article.
 - PATCH /api/articles/:article_id - Allows you to add/subtract votes.
 - GET /api/articles/:article_id/comments - Returns a list of comments for article.

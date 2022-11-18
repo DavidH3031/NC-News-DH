@@ -88,7 +88,7 @@ describe("/api", () => {
 describe("/api/articles", () => {
   it("GET - 200: Should return an array of 'article objects' with the correct properties.", () => {
     return request(app)
-      .get("/api/articles")
+      .get("/api/articles?limit=12")
       .expect(200)
       .then(({ body }) => {
         expect(body.articles.length).toBe(12);
@@ -211,6 +211,86 @@ describe("/api/articles", () => {
           created_at: expect.any(String),
         });
       });
+  });
+  describe("/api/articles ADVANCED", () => {
+    it("GET - 200: Should only return 10 objects by default.", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).toBe(10);
+          expect(body.total_count).toBe("12");
+
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+          body.articles.forEach((article) => {
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+    it("GET - 200: Should only return 5 objects when given a limit of 5.", () => {
+      return request(app)
+        .get("/api/articles?limit=5")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).toBe(5);
+          expect(body.total_count).toBe("12");
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+          body.articles.forEach((article) => {
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+    it("GET - 200: Should only return 5 objects when given a limit of 5 AND a page of 2.", () => {
+      return request(app)
+        .get("/api/articles?limit=5&p=2")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).toBe(5);
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+          body.articles.forEach((article) => {
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+    it("GET - 200: Should return an empty array if no more articles on given page", () => {
+      return request(app)
+        .get("/api/articles?limit=12&p=2")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).toBe(0);
+          expect(Array.isArray(body.articles)).toBe(true);
+        });
+    });
   });
 });
 
@@ -417,6 +497,22 @@ describe("Error Handling", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("sort_by: 'whatcolumn' is not found.");
+        });
+    });
+    it("GET - 400: Should respond with 400 limit is passed an invalid datatype", () => {
+      return request(app)
+        .get("/api/articles?limit=hello")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("'limit' must be a number!");
+        });
+    });
+    it("GET - 400: Should respond with 400 page is passed an invalid datatype", () => {
+      return request(app)
+        .get("/api/articles?p=hello")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("'p' must be a number!");
         });
     });
   });

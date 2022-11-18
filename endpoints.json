@@ -78,6 +78,11 @@
       ]
     }
   },
+  "DELETE /api/articles": {
+    "description": "Allows you to delete an article by ID and by association deletes all related comments.",
+    "queries": [],
+    "exampleResponse": {}
+  },
   "GET /api/articles/:article_id": {
     "description": "serves an article based on the ID",
     "queries": [],

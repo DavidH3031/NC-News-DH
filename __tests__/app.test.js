@@ -433,6 +433,14 @@ describe("/api/articles/:article_id", () => {
         });
       });
   });
+  it("DELETE - 204: Should delete the article of given ID", () => {
+    return request(app)
+      .delete("/api/articles/3")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
   describe("/api/articles/:article_id/comments", () => {
     it("GET - 200: Should return an array of comments for given article which should have the correct properties", () => {
       return request(app)
@@ -618,7 +626,7 @@ describe("Error Handling", () => {
     });
   });
   describe("Delete Error Handling", () => {
-    it("DELETE - 400: Should return 400 when given an invalid datatype for ID", () => {
+    it("DELETE - 400: Should return 400 when given an invalid datatype for ID on comments", () => {
       return request(app)
         .delete("/api/comments/HELLO")
         .expect(400)
@@ -626,12 +634,28 @@ describe("Error Handling", () => {
           expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
         });
     });
-    it("DELETE - 404: Should return 404 when given a valid ID but not found", () => {
+    it("DELETE - 400: Should return 400 when given an invalid datatype for ID on articles", () => {
+      return request(app)
+        .delete("/api/articles/HELLO")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request - Invalid datatype for ID");
+        });
+    });
+    it("DELETE - 404: Should return 404 when given a valid ID but not found on comments", () => {
       return request(app)
         .delete("/api/comments/30312899")
         .expect(404)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("comment with that ID does not exist");
+        });
+    });
+    it("DELETE - 404: Should return 404 when given a valid ID but not found on articles", () => {
+      return request(app)
+        .delete("/api/articles/30312899")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid ID: Article not found!");
         });
     });
   });

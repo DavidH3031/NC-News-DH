@@ -305,6 +305,21 @@ const insertTopic = ({ slug, description }) => {
     });
 };
 
+const deleteArticleById = (id) => {
+  return fetchArticleById(id)
+    .then(() => {
+      return db.query(
+        `
+      DELETE FROM articles WHERE article_id = $1;
+      `,
+        [id]
+      );
+    })
+    .then(() => {
+      return;
+    });
+};
+
 module.exports = {
   fetchArticleById,
   fetchArticles,
@@ -319,4 +334,5 @@ module.exports = {
   insertArticle,
   fetchArticlesCount,
   insertTopic,
+  deleteArticleById,
 };

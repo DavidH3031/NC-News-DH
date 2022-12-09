@@ -320,6 +320,17 @@ const deleteArticleById = (id) => {
     });
 };
 
+const insertUser = ({ username, name, avatar_url }) => {
+  return db
+    .query(
+      `INSERT INTO users ( username, name, avatar_url) VALUES ($1, $2, $3) RETURNING *;`,
+      [username, name, avatar_url]
+    )
+    .then((res) => {
+      return res.rows[0];
+    });
+};
+
 module.exports = {
   fetchArticleById,
   fetchArticles,
@@ -335,4 +346,5 @@ module.exports = {
   fetchArticlesCount,
   insertTopic,
   deleteArticleById,
+  insertUser,
 };

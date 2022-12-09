@@ -13,6 +13,7 @@ const {
   fetchArticlesCount,
   insertTopic,
   deleteArticleById,
+  insertUser,
 } = require("../models/news.model");
 const { readFile } = require("fs/promises");
 
@@ -147,6 +148,15 @@ exports.deleteArticle = (req, res, next) => {
   deleteArticleById(articleId)
     .then(() => {
       res.status(204).send();
+    })
+    .catch(next);
+};
+
+exports.postUser = (req, res, next) => {
+  const user = req.body;
+  insertUser(user)
+    .then((newUser) => {
+      res.status(201).send({ newUser });
     })
     .catch(next);
 };
